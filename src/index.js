@@ -2,6 +2,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const Database = require("better-sqlite3");
 
 // Created the express server.
 
@@ -22,7 +23,32 @@ app.listen(serverPort, () => {
 
 const db = new Database("./src/db/minecraft-api.db", { verbose: console.log });
 
-// Define desired endpoints
+/* // Define desired endpoints
+app.get("/blocks", (req, res) => {
+  //prepare the query
+  const query = db.prepare("SELECT * FROM blocks");
+  //execute the query
+  const blocks = query.all();
+  res.json(blocks);
+}); */
+
+//endpoint 2 //
+app.get("/blocks", (req, res) => {
+  // query params
+  const nameFilterParam = req.query.name;
+
+  const query = db.prepare(`SELECT * FROM blocks WHERE name LIKE ?`);
+  const blockData = query.get(nameFilterParam);
+
+  // server response
+  const response = {
+    success: true,
+    blocks: blockData,
+  };
+
+  // send server response in json format
+  res.json(response);
+});
 
 // static server of images
 
