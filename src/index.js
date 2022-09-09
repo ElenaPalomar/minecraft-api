@@ -12,8 +12,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-//start the server on port 3000
-
+//start the deploy server on port 4000
+const serverPort = 4000;
 app.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
@@ -23,3 +23,8 @@ app.listen(serverPort, () => {
 const db = new Database("./src/db/minecraft-api.db", { verbose: console.log });
 
 // Define desired endpoints
+
+// static server of images
+
+const staticServerImagesPathWeb = "./src/public-images/";
+app.use(express.static(staticServerImagesPathWeb));
