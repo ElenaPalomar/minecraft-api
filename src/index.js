@@ -26,28 +26,11 @@ app.listen(serverPort, () => {
 const db = new Database("./src/db/minecraft-api.db", { verbose: console.log });
 
 
-// ENDPOINTS
+// FUNCTIONS
 
-// Endpoint that returns all elements blocks
-/* app.get("/blocks", (req, res) => {
-  //prepare the query
-  const query = db.prepare("SELECT * FROM blocks");
-  //execute the query
-  const blocks = query.all();
-  res.json(blocks);
-}); */
-
-// Endpoint that returns all elements blocks searched by name
-app.get("/blocks", (req, res) => {
-  // query params
-  const nameFilterParam = req.query.name;
-
-  // prepare the query
-  const query = db.prepare(`SELECT * FROM blocks WHERE name LIKE ?`);
-  //execute the query
-  const blockData = query.all(`%${nameFilterParam}%`);
-
-  for (const item of blockData) {
+// Function to transform database integers 1 and 0 into the true and false booleans
+const booleansTranform = (object) => {
+  for (const item of object) {
 
     if (item.overworld === 1) {
       item.overworld = true;
@@ -68,6 +51,40 @@ app.get("/blocks", (req, res) => {
     }
 
   }
+}
+
+// Function to select the query based on the query parameters the user is looking for
+const selectQuery = (nameFilterParam, categoryFilterParam, nameQuery, categoryQuery) => {
+
+  if (nameFilterParam) {
+
+    return nameQuery.all(`%${nameFilterParam}%`);
+
+  } else if (categoryFilterParam) {
+
+    return categoryQuery.all(`%${categoryFilterParam}%`);
+
+  }
+
+}
+
+
+// ENDPOINTS
+
+// Endpoint that returns all elements blocks searched by name
+app.get("/blocks", (req, res) => {
+
+  // query params
+  const nameFilterParam = req.query.name;
+  const categoryFilterParam = req.query.category;
+
+  // prepare the query
+  const nameQuery = db.prepare(`SELECT * FROM blocks WHERE name LIKE ?`);
+  const categoryQuery = db.prepare(`SELECT * FROM blocks WHERE category LIKE ?`);
+  //execute the query
+  const blockData = selectQuery(nameFilterParam, categoryFilterParam, nameQuery, categoryQuery);
+
+  booleansTranform(blockData);
 
   // server response
   const response = {
