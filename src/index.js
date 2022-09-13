@@ -42,33 +42,29 @@ app.get("/blocks", (req, res) => {
   // query params
   const nameFilterParam = req.query.name;
 
-  /* SELECT *, (CASE WHEN overworld IS 1 THEN 'true' ELSE 'false' END) as 'overworld', (CASE WHEN nether IS 1 THEN 'true' ELSE 'false' END) as 'nether', (CASE WHEN end IS 1 THEN 'true' ELSE 'false' END) as 'end' FROM blocks WHERE name LIKE '%stone%'
- */
-
-  /* SELECT *, IIF(overworld = 1, 'true', 'false'), IIF(nether = 1, 'true', 'false'), IIF(end = 1, 'true', 'false') FROM blocks WHERE name LIKE '%stone%'
- */
-
+  // prepare the query
   const query = db.prepare(`SELECT * FROM blocks WHERE name LIKE ?`);
+  //execute the query
   const blockData = query.all(`%${nameFilterParam}%`);
 
   for (const item of blockData) {
 
-    if (item.overworld === '1') {
-      item.overworld === true;
+    if (item.overworld === 1) {
+      item.overworld = true;
     } else {
-      item.overworld === false;
+      item.overworld = false;
     }
 
-    if (item.nether === '1') {
-      item.nether === true;
+    if (item.nether === 1) {
+      item.nether = true;
     } else {
-      item.nether === false;
+      item.nether = false;
     }
 
-    if (item.end === '1') {
-      item.end === true;
+    if (item.end === 1) {
+      item.end = true;
     } else {
-      item.end === false;
+      item.end = false;
     }
 
   }
